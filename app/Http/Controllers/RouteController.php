@@ -17,6 +17,7 @@ class RouteController extends Controller
         return view('review');
     }
 
+    // тест для гита
     public function review_check(request $request) {
         $request->validate([
             'email' => 'required|min:4|max:100',
