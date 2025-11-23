@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contact;
 use Illuminate\Http\Request;
 
 class RouteController extends Controller
@@ -18,11 +19,20 @@ class RouteController extends Controller
     }
 
     // тест для гита
-    public function review_check(request $request) {
+    public function review_check(Request $request)
+    {
         $request->validate([
-            'email' => 'required|min:4|max:100',
-            'subject' => 'required',
+            'email' => 'required|email|min:4|max:100',
+            'subject' => 'required|min:3|max:200',
             'message' => 'required|min:10|max:500',
         ]);
+
+        Contact::create([
+            'email' => $request->email,
+            'subject' => $request->subject,
+            'message' => $request->message,
+        ]);
+
+        return redirect()->back()->with('success', 'Отзыв отправлен!');
     }
 }
