@@ -1,35 +1,181 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield("new_title")</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>@yield("new_title", "Etelecom Baku")</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/6.7.0/css/flag-icons.min.css">
+
+
+    <style>
+        body {
+            background: #0f0f0f;
+            color: #ffffff;
+        }
+        .navbar-dark .navbar-nav .nav-link {
+            color: #fff;
+            transition: 0.2s;
+        }
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: #0d6efd;
+        }
+        .footer {
+            padding: 20px 0;
+            border-top: 1px solid #333;
+            text-align: center;
+            color: #777;
+            margin-top: 40px;
+            font-size: 14px;
+        }
+        .nav-item.dropdown:hover > .dropdown-menu {
+            display: block;
+        }
+        .dropdown-menu {
+            background: #111 !important;
+            border: 1px solid #333 !important;
+        }
+    </style>
 </head>
-<body class="bg-dark text-white">
-<div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom bg-dark text-white">
-    <a href="/" class="d-flex align-items-center text-decoration-none text-white">
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="32" class="me-2"
-             viewBox="0 0 24 24" fill="#0d6efd">
-            <path d="M3 6h18v2H3zm0 5h12v2H3zm0 5h18v2H3z"/>
-        </svg>
 
-        <span class="fs-4">Etelecom_Baku</span>
-    </a>
+<body>
 
-    <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-        <a class="me-3 py-2 text-white text-decoration-none" href="/">Главная</a>
-        <a class="me-3 py-2 text-white text-decoration-none" href="/about">Про Нас</a>
-        <a class="me-3 py-2 text-white text-decoration-none" href="/review">Отзывы</a>
-    </nav>
-</div>
+{{-- ШАПКА --}}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
+    <div class="container">
 
-<div class="container">
+        <a class="navbar-brand d-flex align-items-center fw-bold" href="/">
+            <span class="fs-4">Etelecom Baku</span>
+        </a>
+
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+
+            <ul class="navbar-nav ms-auto">
+
+
+
+                {{-- Мега Каталог --}}
+                <li class="nav-item dropdown position-static">
+
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        {{ __('main.catalog') }}
+                    </a>
+
+                    <div class="dropdown-menu w-100 p-4 text-white">
+
+                        <div class="row">
+
+                            {{-- ЛЕВО — КАТЕГОРИИ --}}
+                            <div class="col-md-4">
+                                <h5 class="border-bottom pb-2 mb-3">{{ __('main.categories') }}</h5>
+
+                                @php
+                                    $menuCategories = \App\Models\Category::where('is_active', true)->get();
+                                @endphp
+
+                                @foreach($menuCategories as $cat)
+                                    <a href="/category/{{ $cat->slug }}"
+                                       class="d-block text-white mb-2">
+                                        {{ $cat->title }}
+                                    </a>
+                                @endforeach
+                            </div>
+
+                            {{-- ПРАВО — ТОВАРЫ --}}
+                            <div class="col-md-8">
+                                <h5 class="border-bottom pb-2 mb-3">{{ __('main.popular_products') }}</h5>
+
+                                @php
+                                    $menuPhones = \App\Models\Phone::where('is_active', true)
+                                        ->orderBy('id', 'desc')
+                                        ->limit(8)
+                                        ->get();
+                                @endphp
+
+                                <div class="row">
+                                    @foreach($menuPhones as $phone)
+                                        <div class="col-md-3 mb-3">
+                                            <a href="/phone/{{ $phone->slug }}" class="text-decoration-none text-white">
+
+                                                @if($phone->image)
+                                                    <img src="{{ asset('storage/'.$phone->image) }}"
+                                                         style="width:100%; height:80px; object-fit:cover;"
+                                                         class="rounded mb-1">
+                                                @endif
+
+                                                <small>{{ $phone->title }}</small>
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </li>
+
+                {{-- ЯЗЫКИ --}}
+                <li class="nav-item dropdown">
+
+                    {{-- кнопка переключения --}}
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2"
+                       href="#"
+                       data-bs-toggle="dropdown">
+
+                        {{-- Флаг текущего языка --}}
+                        <span class="fi fi-{{ app()->getLocale() === 'en'
+            ? 'gb'
+            : (app()->getLocale() === 'az' ? 'az' : 'ru') }}"></span>
+
+                        {{ strtoupper(app()->getLocale()) }}
+                    </a>
+
+                    {{-- Список языков --}}
+                    <div class="dropdown-menu bg-dark text-white border-secondary">
+
+                        <a class="dropdown-item text-white" href="{{ route('lang.switch', 'ru') }}">
+                            <span class="fi fi-ru me-2"></span> Русский
+                        </a>
+
+                        <a class="dropdown-item text-white" href="{{ route('lang.switch', 'az') }}">
+                            <span class="fi fi-az me-2"></span> Azərbaycan
+                        </a>
+
+                        <a class="dropdown-item text-white" href="{{ route('lang.switch', 'en') }}">
+                            <span class="fi fi-gb me-2"></span> English
+                        </a>
+
+                    </div>
+                </li>
+
+
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+{{-- КОНТЕНТ --}}
+<div class="container mt-4">
     @yield("new_content")
 </div>
 
+{{-- ФУТЕР --}}
+<div class="footer">
+    © {{ date('Y') }} Etelecom Baku — Все права защищены
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
