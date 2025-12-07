@@ -13,4 +13,10 @@ class Category extends Model
         'slug',
         'is_active',
     ];
+
+    public function phones()
+    {
+        return $this->hasMany(Phone::class);
+    }
+
 }
